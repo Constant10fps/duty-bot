@@ -3,7 +3,7 @@ import { session } from "https://deno.land/x/grammy@v1.33.0/convenience/session.
 import { freeStorage } from "https://deno.land/x/grammy_storages@v2.4.2/free/src/adapter.ts";
 import { listProfiles, Profile } from "../db/profile.ts";
 import { getOrder, getPair, listPairs, setOrder, setPair } from "../db/duty.ts";
-import { checkChannel } from "../db/duty.ts";
+// import { checkChannel } from "../db/duty.ts";
 
 // Session Data shenannigans
 interface SessionData {
@@ -19,12 +19,21 @@ dutyComposer.use(
     storage: freeStorage<SessionData>(Deno.env.get("TOKEN") || ""),
   }),
 );
+
+dutyComposer.use(async (ctx, next) => {
+  console.log(ctx.chatId);
+  await next();
+});
 // check for admin and status
 const checkStatus = (ctx: MyContext, status: SessionData["status"]) =>
   ctx.session.status == status && ctx.session.studentList != undefined;
 const checkRights = (ctx: MyContext) =>
   ctx.from?.id == Number(Deno.env.get("ADMIN_ID"));
 
+dutyComposer.chatType("private").command("cancel", async (ctx) => {
+  ctx.session.status = undefined;
+  await ctx.reply("Действие отменено");
+});
 // recieve /create from admin
 dutyComposer.chatType("private").command("create").filter(
   (ctx) => checkRights(ctx),
@@ -93,17 +102,14 @@ dutyComposer.callbackQuery("no").filter(
   },
 );
 
-dutyComposer.chatType("private").command("cancel", async (ctx) => {
-  ctx.session.status = undefined;
-  await ctx.reply("Действие отменено");
-});
 // send message to channel
-dutyComposer.chatType("channel").command("duty", async (ctx) => {
-  const order = await getOrder();
-  const duty_profiles = await getPair(order);
-  await setOrder((order + 1) % 15);
-  // edit message to make the announcement
-  await ctx.editMessageText(
-    `🧹 Сегодня дежурят ${duty_profiles?.first.name} ${duty_profiles?.first.surname} и ${duty_profiles?.second.name} ${duty_profiles?.second.surname}`,
-  );
-});
+dutyComposer.chatType("channel")
+  .command("duty", async (ctx) => {
+    const order = await getOrder();
+    const duty_profiles = await getPair(order);
+    await setOrder((order + 1) % 15);
+    // edit message to make the announcement
+    await ctx.editMessageText(
+      `🧹 Сегодня дежурят ${duty_profiles?.first.name} ${duty_profiles?.first.surname} и ${duty_profiles?.second.name} ${duty_profiles?.second.surname}`,
+    );
+  });

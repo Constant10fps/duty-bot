@@ -35,7 +35,6 @@ export const listPairs = async () =>
     (e) => e.value,
   );
 
-const channelKey = (id: number) => ["channel", id];
-
-export const checkChannel = async (id: number) =>
-  (await kv.get<boolean>(channelKey(id))).value ? true : false;
+// TODO: fix the channel checking
+// export const checkChannel = (id: number) =>
+//   Deno.env.get("CHANNEL_ID") == String(id);
