@@ -1,7 +1,6 @@
 import { kv } from "../mod.ts";
 import { Profile } from "./profile.ts";
-
-type id = number;
+import { channelID } from "../mod.ts";
 
 interface ProfilePair {
   first: Profile;
@@ -35,6 +34,4 @@ export const listPairs = async () =>
     (e) => e.value,
   );
 
-// TODO: fix the channel checking
-// export const checkChannel = (id: number) =>
-//   Deno.env.get("CHANNEL_ID") == String(id);
+export const checkChannel = (id: number) => channelID == id;
