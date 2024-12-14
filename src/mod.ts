@@ -20,3 +20,7 @@ bot.use(session({
 }));
 
 bot.use(dutyComposer);
+bot.api.setMyCommands([
+  { command: "create", description: "create the duty list (ADMIN)" },
+  { command: "cancel", description: "cancel action" },
+]);

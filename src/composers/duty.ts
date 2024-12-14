@@ -19,7 +19,7 @@ const checkRights = (ctx: MyContext) =>
 
 dutyComposer.chatType("private").command("cancel", async (ctx) => {
   ctx.session.status = undefined;
-  await ctx.reply("Действие отменено");
+  await ctx.reply("❌ • Действие отменено");
 });
 // recieve /create from admin
 dutyComposer.chatType("private").command("create").filter(
@@ -28,11 +28,11 @@ dutyComposer.chatType("private").command("create").filter(
     ctx.session.studentList = await listProfiles();
     ctx.session.status = "pairs";
     await ctx.reply(
-      `sure\n\n here are you're classmates:\n ${
+      `Окей ✅\n\nВот твои однокласснички:\n${
         ctx.session.studentList.map(
           (x, idx) => `${idx + 1}. ${x.name} ${x.surname}`,
         ).join("\n")
-      }\nChoose pairs.`,
+      }\nВыбирай пары.`,
     );
   },
 );
@@ -54,18 +54,18 @@ dutyComposer.chatType("private").on("msg:text").filter(
         order++;
       }
 
-      await ctx.reply("Done!");
+      await ctx.reply("✅ • Сделано!");
       // 2. give pairs to the user and approve
       const result = (await listPairs()).map((x) =>
-        `${x.first.name} ${x.first.surname} и ${x.second.name} ${x.second.surname}`
+        `${x.first.surname} и ${x.second.surname}`
       ).join("\n");
       const keyboard = new InlineKeyboard();
-      keyboard.text("Да", "yes").text("Нет", "no");
-      await ctx.reply(`${result}\nПравильно?`, { reply_markup: keyboard });
+      keyboard.text("Да • ✅", "yes").text("Нет • ❌", "no");
+      await ctx.reply(`${result}\n\nПравильно?`, { reply_markup: keyboard });
       // 3. set status waiting for an approval
       ctx.session.status = "approval";
     } else {
-      await ctx.reply("Ошибка, пропиши /create еще раз");
+      await ctx.reply("🚫 • Ошибка, пропиши /create еще раз");
       ctx.session.status = undefined;
     }
   },
@@ -75,9 +75,9 @@ dutyComposer.chatType("private").callbackQuery("yes").filter(
   (ctx) => checkStatus(ctx, "approval") && checkRights(ctx),
   async (ctx) => {
     ctx.session.status = undefined;
+    ctx.editMessageReplyMarkup();
     await ctx.reply(
       "Отлично! Отправь команду /duty в канал с ботом и смотри результат",
-      { reply_markup: { remove_keyboard: true } },
     );
   },
 );
