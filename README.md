@@ -1,6 +1,9 @@
 # duty bot
 
-add this to `./.env`:
+> [!WARNING]
+> DB creation is not yet implemented, the current procedure is **manual**.
+
+add this to `.env`:
 ```
 TOKEN="[your bot token]"
 ADMIN_ID="[user id of the admin]"
