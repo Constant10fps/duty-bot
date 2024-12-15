@@ -1,7 +1,14 @@
 import { Composer, InlineKeyboard } from "grammy";
 import { listProfiles } from "../db/profile.ts";
-import { getOrder, getPair, listPairs, setOrder, setPair } from "../db/duty.ts";
-import { MyContext, SessionData } from "../mod.ts";
+import {
+  checkChannel,
+  getOrder,
+  getPair,
+  listPairs,
+  setOrder,
+  setPair,
+} from "../db/duty.ts";
+import { adminID, MyContext, SessionData } from "../mod.ts";
 // import { checkChannel } from "../db/duty.ts";
 
 // Session Data shenannigans
@@ -14,8 +21,8 @@ dutyComposer.use(async (ctx, next) => {
 // check for admin and status
 const checkStatus = (ctx: MyContext, status: SessionData["status"]) =>
   ctx.session.status == status && ctx.session.studentList != undefined;
-const checkRights = (ctx: MyContext) =>
-  ctx.from?.id == Number(Deno.env.get("ADMIN_ID"));
+export const checkRights = (ctx: MyContext) =>
+  adminID.includes(ctx.from?.id || 0);
 
 dutyComposer.chatType("private").command("cancel", async (ctx) => {
   ctx.session.status = undefined;
@@ -90,14 +97,22 @@ dutyComposer.callbackQuery("no").filter(
   },
 );
 
+dutyComposer.chatType("private").filter((ctx) => checkRights(ctx)).command(
+  "order",
+  async (ctx) => {
+    await setOrder(Number(ctx.msg.text.split(" ")[1]) % 15);
+    await ctx.reply("Сделано :checkmark:");
+  },
+);
+
 // send message to channel
-dutyComposer.chatType("channel")
+dutyComposer.chatType("channel").filter((ctx) => checkChannel(ctx.chatId))
   .command("duty", async (ctx) => {
     const order = await getOrder();
     const duty_profiles = await getPair(order);
     await setOrder((order + 1) % 15);
     // edit message to make the announcement
     await ctx.editMessageText(
-      `🧹 Сегодня дежурят ${duty_profiles?.first.name} ${duty_profiles?.first.surname} и ${duty_profiles?.second.name} ${duty_profiles?.second.surname}`,
+      `🧹 Сегодня дежурят ${duty_profiles?.first.name} и ${duty_profiles?.second.name}`,
     );
   });
