@@ -1,6 +1,5 @@
 import { Bot, Context, session, SessionFlavor } from "grammy";
 import { freeStorage } from "https://deno.land/x/grammy_storages@v2.4.2/free/src/adapter.ts";
-import "jsr:@std/dotenv/load";
 import { dutyComposer } from "./composers/duty.ts";
 import { Profile } from "./db/profile.ts";
 import { studentsComposer } from "./composers/students.ts";
