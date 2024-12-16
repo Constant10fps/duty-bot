@@ -2,7 +2,7 @@
 
 ## Setting it Up
 1. Fork this repository
-2. Go to [Deno Deploy 🦕](deno.com/deploy) and [sign in](dash.deno.com/signin)
+2. Go to [Deno Deploy 🦕](https://deno.com/deploy) and [sign in](https://dash.deno.com/signin)
 3. Create the project:
   - Choose this repo (the one you forked)
   - For entrypoint, select `deploy.ts`
