@@ -1,4 +1,4 @@
-# duty bot: organise
+# Duty Bot: Automate your class duty managment
 
 ## Setting it Up
 1. Fork this repository
