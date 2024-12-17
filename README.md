@@ -1,5 +1,3 @@
-# Duty Bot: Automate your class duty managment
-
 ## Setting it Up
 - While configuring deployment, add the enviroment variables:
   ```
