@@ -1,11 +1,11 @@
-import { Composer, Context } from "grammy";
+import { Composer } from "grammy";
 import { getGroup, getOrder, setOrder } from "../db/duty.ts";
-import { channelId } from "../mod.ts";
 import { getSettings } from "../db/settings.ts";
+import { checkChannel } from "../db/admin.ts";
 
 export const channelComposer = new Composer();
 
-channelComposer.chatType("channel").filter((ctx) => checkChannel(ctx))
+channelComposer.chatType("channel").filter((ctx) => checkChannel(ctx.chat.id))
   .command("duty", async (ctx) => {
     const settings = await getSettings();
     const order = await getOrder() || 0;
@@ -18,5 +18,3 @@ channelComposer.chatType("channel").filter((ctx) => checkChannel(ctx))
     }`;
     await ctx.editMessageText(messageText);
   });
-
-const checkChannel = (ctx: Context) => ctx.chatId == channelId;

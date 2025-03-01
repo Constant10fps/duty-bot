@@ -2,7 +2,7 @@ import { Bot, Context, session, SessionFlavor } from "grammy";
 import { freeStorage } from "https://deno.land/x/grammy_storages@v2.4.2/free/src/mod.ts";
 import { adminComposer } from "./composers/admin.ts";
 import { channelComposer } from "./composers/channel.ts";
-import { setAdmin } from "./db/admin.ts";
+import { setAdmin, setChannel } from "./db/admin.ts";
 
 interface SessionData {
   status?: "settings" | "db" | "groups" | "check";
@@ -10,6 +10,7 @@ interface SessionData {
 
 export type BotContext = Context & SessionFlavor<SessionData>;
 export const bot = new Bot<BotContext>(Deno.env.get("TOKEN") || "");
+
 bot.use(
   session({
     initial: () => ({}),
@@ -21,9 +22,13 @@ export const kv = await Deno.openKv();
 export const channelId = Number(Deno.env.get("CHANNEL_ID"));
 
 bot.chatType("private").command("add", async (ctx) => {
-  const adminId = Number(ctx.match);
-  if (ctx.match) {
-    await setAdmin(adminId);
+  const id = Number(ctx.match);
+  if (id) {
+    if (id > 0) {
+      await setAdmin(id);
+    } else {
+      await setChannel(id);
+    }
     await ctx.react("👍");
   } else {
     await ctx.react("🌚");
