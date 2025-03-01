@@ -1,2 +1,4 @@
 .env
 deno.lock
+.DS_Store
+old/

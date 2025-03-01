@@ -1,10 +1,17 @@
 import { Composer, Context } from "grammy";
-import { adminId, BotContext, checkStatus } from "../mod.ts";
+import { BotContext, checkStatus } from "../mod.ts";
 import { getSettings, setSettings } from "../db/settings.ts";
 import { getProfile, listProfiles, setProfile } from "../db/profile.ts";
 import { setGroup, setOrder } from "../db/duty.ts";
+import { checkAdmin } from "../db/admin.ts";
 
 export const adminComposer = new Composer<BotContext>();
+
+adminComposer.use(async (ctx, next) => {
+  if (await checkUser(ctx)) {
+    await next();
+  }
+});
 
 // cancel everything (mischief prone)
 adminComposer.chatType("private").command("cancel", async (ctx) => {
@@ -14,7 +21,6 @@ adminComposer.chatType("private").command("cancel", async (ctx) => {
 
 // settings
 adminComposer.chatType("private")
-  .filter((ctx) => checkUser(ctx))
   .command("settings", async (ctx) => {
     ctx.session.status = "settings";
     const settings = await getSettings();
@@ -33,7 +39,6 @@ adminComposer.chatType("private")
   });
 
 adminComposer.chatType("private")
-  .filter((ctx) => checkUser(ctx))
   .filter((ctx) => checkStatus(ctx, "settings"))
   .on("msg:text", async (ctx) => {
     ctx.session.status = undefined;
@@ -50,7 +55,6 @@ adminComposer.chatType("private")
 
 // list the students
 adminComposer.chatType("private")
-  .filter((ctx) => checkUser(ctx))
   .command("students", async (ctx) => {
     const students = await listProfiles();
     await ctx.reply(
@@ -63,14 +67,12 @@ adminComposer.chatType("private")
 
 // input the students
 adminComposer.chatType("private")
-  .filter((ctx) => checkUser(ctx))
   .command("db", async (ctx) => {
     ctx.session.status = "db";
     await ctx.reply("Waiting for students list");
   });
 
 adminComposer.chatType("private")
-  .filter((ctx) => checkUser(ctx))
   .filter((ctx) => checkStatus(ctx, "db"))
   .on("msg:text", async (ctx) => {
     ctx.session.status == undefined;
@@ -89,7 +91,6 @@ adminComposer.chatType("private")
 
 // groups stuff
 adminComposer.chatType("private")
-  .filter((ctx) => checkUser(ctx))
   .command("groups", async (ctx) => {
     ctx.session.status = "groups";
     const students = await listProfiles();
@@ -102,7 +103,6 @@ adminComposer.chatType("private")
   });
 
 adminComposer.chatType("private")
-  .filter((ctx) => checkUser(ctx))
   .filter((ctx) => checkStatus(ctx, "groups"))
   .on("msg:text", async (ctx) => {
     ctx.session.status = undefined;
@@ -124,7 +124,6 @@ adminComposer.chatType("private")
 
 // order stuff
 adminComposer.chatType("private")
-  .filter((ctx) => checkUser(ctx))
   .command("order", async (ctx) => {
     const text = ctx.msg.text.split(" ");
     if (text.length == 2 && Number(text[1]) >= 0) {
@@ -136,7 +135,7 @@ adminComposer.chatType("private")
   });
 
 // functions
-const checkUser = (ctx: Context) => ctx.from?.id == adminId;
+const checkUser = async (ctx: Context) => await checkAdmin(ctx.from?.id || 0);
 
 const checkStudentList = async (students: string[][]) => {
   const settings = await getSettings();
