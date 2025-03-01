@@ -19,7 +19,6 @@ bot.use(
 
 export const kv = await Deno.openKv();
 export const channelId = Number(Deno.env.get("CHANNEL_ID"));
-export const adminId = Number(Deno.env.get("ADMIN_ID"));
 
 bot.chatType("private").command("add", async (ctx) => {
   const adminId = Number(ctx.match);
