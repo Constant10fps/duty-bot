@@ -21,9 +21,6 @@ export const kv = await Deno.openKv();
 export const channelId = Number(Deno.env.get("CHANNEL_ID"));
 export const adminId = Number(Deno.env.get("ADMIN_ID"));
 
-bot.use(adminComposer);
-bot.use(channelComposer);
-
 bot.chatType("private").command("add", async (ctx) => {
   const adminId = Number(ctx.match);
   if (ctx.match) {
@@ -33,6 +30,9 @@ bot.chatType("private").command("add", async (ctx) => {
     await ctx.react("🌚");
   }
 });
+
+bot.use(adminComposer);
+bot.use(channelComposer);
 
 bot.chatType("private").on("msg:text", async (ctx) => {
   await ctx.reply(
