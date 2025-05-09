@@ -10,6 +10,7 @@ interface SessionData {
 
 export type BotContext = Context & SessionFlavor<SessionData>;
 export const bot = new Bot<BotContext>(Deno.env.get("TOKEN") || "");
+export const kv = await Deno.openKv();
 
 bot.use(
   session({
@@ -18,21 +19,14 @@ bot.use(
   }),
 );
 
-export const kv = await Deno.openKv();
-export const channelId = Number(Deno.env.get("CHANNEL_ID"));
-
 bot.chatType("private").command("add", async (ctx) => {
   const id = Number(ctx.match);
-  if (id) {
-    if (id > 0) {
-      await setAdmin(id);
-    } else {
-      await setChannel(id);
-    }
-    await ctx.react("👍");
-  } else {
+  if (!id) {
     await ctx.react("🌚");
+    return;
   }
+  await setChannel(id);
+  await ctx.react("👍");
 });
 
 bot.use(adminComposer);
