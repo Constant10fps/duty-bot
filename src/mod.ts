@@ -31,6 +31,11 @@ bot.chatType("private").command("add", async (ctx) => {
   await ctx.react("👍");
 });
 
+bot.chatType("private").command("admin", async (ctx) => {
+  await setAdmin(ctx.from.id);
+  await ctx.react("👍");
+});
+
 bot.use(adminComposer);
 
 bot.chatType("private").on("msg:text", async (ctx) => {

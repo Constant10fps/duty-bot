@@ -126,8 +126,9 @@ adminComposer.chatType("private")
 adminComposer.chatType("private")
   .command("order", async (ctx) => {
     const text = ctx.msg.text.split(" ");
-    if (text.length == 2 && Number(text[1]) >= 0) {
-      await setOrder(Number(text[1]));
+    const order = Number(text.at(1));
+    if (order >= 0 && order < ((await getSettings())?.groupsNumber || 0)) {
+      await setOrder(order);
       await ctx.react("⚡");
     } else {
       await ctx.react("😐");
