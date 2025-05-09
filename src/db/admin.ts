@@ -20,7 +20,6 @@ const getChannel = async (id: number) =>
   (await kv.get<boolean>(channelKey(id))).value;
 
 export const checkChannel = async (id: number) => {
-  const alllowed = await getChannel(id);
-  console.log(allowed);
+  const allowed = await getChannel(id);
   return allowed ? true : false;
-}
+};
