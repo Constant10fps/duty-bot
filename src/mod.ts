@@ -19,6 +19,8 @@ bot.use(
   }),
 );
 
+bot.use(channelComposer);
+
 bot.chatType("private").command("add", async (ctx) => {
   const id = Number(ctx.match);
   if (!id) {
@@ -30,7 +32,6 @@ bot.chatType("private").command("add", async (ctx) => {
 });
 
 bot.use(adminComposer);
-bot.use(channelComposer);
 
 bot.chatType("private").on("msg:text", async (ctx) => {
   await ctx.reply(
