@@ -10,7 +10,7 @@ channelComposer.chatType("channel").filter((ctx) => checkChannel(ctx.chat.id))
     const settings = await getSettings();
     const order = await getOrder() || 0;
     const group = await getGroup(order);
-    const newOrder = (order + 1) % (settings?.groupsNumber || order + 1);
+    const newOrder = settings?.groupsNumber;
     await setOrder(newOrder);
 
     const messageText = `🧹 Cегодня дежурят:\n${
