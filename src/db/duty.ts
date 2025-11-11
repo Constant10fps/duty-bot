@@ -17,5 +17,5 @@ export const setGroup = async (
 ) => await kv.set(pairKey(order), { members: profiles } as Group);
 
 export const getOrder = async () => (await kv.get<number>(orderKey())).value;
-export const setOrder = async (order: number) =>
-  await kv.set(orderKey(), order);
+export const setOrder = async (max: number) =>
+  await kv.set(orderKey(), Math.floor(Math.random() * max));
